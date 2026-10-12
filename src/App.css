@@ -421,3 +421,18 @@ input {
 .small {
   font-size: 0.8rem;
 }
+
+.option-help {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8rem;
+}
+
+.inverted-notice {
+  margin: 0;
+  padding: 10px 14px;
+  width: 100%;
+  border: 1px dashed var(--accent);
+  border-radius: 12px;
+  color: var(--accent);
+}

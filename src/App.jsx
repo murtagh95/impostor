@@ -14,6 +14,7 @@ const DEFAULT_CONFIG = {
   themeIds: ['alimentos'],
   impostorCount: 1,
   impostorHint: true,
+  invertRoles: false,
 }
 
 function load(key, fallback) {

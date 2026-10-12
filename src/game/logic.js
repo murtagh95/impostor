@@ -28,16 +28,27 @@ export function validateSetup({ players, themeIds, impostorCount }) {
   return null
 }
 
+export const INVERT_CHANCE = 0.2
+
+// Con 1 impostor, invertir dejaría un solo civil y la ronda terminaría sin jugarse.
+export const canInvert = (impostorCount) => impostorCount >= 2
+
 /**
  * Arma una ronda: elige temática y palabra, sortea impostores y quién arranca.
  * `usedWords` evita repetir palabras entre rondas mientras queden disponibles.
+ * Con `invertRoles`, a veces se intercambian en secreto las cantidades de civiles e impostores.
  */
-export function createRound({ players, themeIds, impostorCount, usedWords = [] }, rng = Math.random) {
+export function createRound(
+  { players, themeIds, impostorCount, usedWords = [], invertRoles = false },
+  rng = Math.random,
+) {
   const theme = getTheme(pick(themeIds, rng))
   const fresh = theme.words.filter((w) => !usedWords.includes(w))
   const word = pick(fresh.length > 0 ? fresh : theme.words, rng)
 
-  const impostors = new Set(shuffle(players.map((_, i) => i), rng).slice(0, impostorCount))
+  const inverted = invertRoles && canInvert(impostorCount) && rng() < INVERT_CHANCE
+  const count = inverted ? players.length - impostorCount : impostorCount
+  const impostors = new Set(shuffle(players.map((_, i) => i), rng).slice(0, count))
   const roles = players.map((name, i) => ({ name: name.trim(), impostor: impostors.has(i) }))
 
   return {
@@ -45,6 +56,7 @@ export function createRound({ players, themeIds, impostorCount, usedWords = [] }
     word,
     roles,
     starter: pick(roles, rng).name,
+    inverted,
     eliminated: [],
     winner: null,
     reason: null,

@@ -1,8 +1,8 @@
 import { THEMES } from '../data/themes.js'
-import { maxImpostors, validateSetup } from '../game/logic.js'
+import { canInvert, INVERT_CHANCE, maxImpostors, validateSetup } from '../game/logic.js'
 
 export default function Setup({ config, onChange, onStart, onLeaderboard }) {
-  const { players, themeIds, impostorCount, impostorHint } = config
+  const { players, themeIds, impostorCount, impostorHint, invertRoles } = config
   const maxImp = maxImpostors(players.length)
   const error = validateSetup(config)
 
@@ -100,6 +100,21 @@ export default function Setup({ config, onChange, onStart, onLeaderboard }) {
           type="checkbox"
           checked={impostorHint}
           onChange={(e) => update({ impostorHint: e.target.checked })}
+        />
+      </label>
+      <label className="option">
+        <span>
+          🔄 Rondas invertidas sorpresa
+          <small className="muted option-help">
+            {canInvert(impostorCount)
+              ? `En ~${INVERT_CHANCE * 100}% de las rondas se intercambian, sin avisar, las cantidades de civiles e impostores.`
+              : 'Necesita 2 impostores o más (y al menos 5 jugadores).'}
+          </small>
+        </span>
+        <input
+          type="checkbox"
+          checked={invertRoles}
+          onChange={(e) => update({ invertRoles: e.target.checked })}
         />
       </label>
 

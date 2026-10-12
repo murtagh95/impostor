@@ -79,6 +79,29 @@ describe('createRound', () => {
     expect(round.word).toBe(words[0])
   })
 
+  it('invierte en secreto las cantidades cuando sale la ronda invertida', () => {
+    const players7 = [...players, 'Fede', 'Gabi']
+    const always = () => 0
+    const round = createRound({ players: players7, themeIds: ['cosas'], impostorCount: 2, invertRoles: true }, always)
+    expect(round.inverted).toBe(true)
+    expect(round.roles.filter((r) => r.impostor)).toHaveLength(5)
+    expect(round.roles.filter((r) => !r.impostor)).toHaveLength(2)
+  })
+
+  it('no invierte si la opción está apagada, si no sale el sorteo o con 1 impostor', () => {
+    const config = { players, themeIds: ['cosas'], impostorCount: 2 }
+    const off = createRound(config, () => 0)
+    expect(off.inverted).toBe(false)
+    expect(off.roles.filter((r) => r.impostor)).toHaveLength(2)
+
+    const unlucky = createRound({ ...config, invertRoles: true }, () => 0.99)
+    expect(unlucky.inverted).toBe(false)
+
+    const single = createRound({ ...config, impostorCount: 1, invertRoles: true }, () => 0)
+    expect(single.inverted).toBe(false)
+    expect(single.roles.filter((r) => r.impostor)).toHaveLength(1)
+  })
+
   it('reutiliza palabras cuando se agotaron todas', () => {
     const words = THEMES.find((t) => t.id === 'verano').words
     const round = createRound({ players, themeIds: ['verano'], impostorCount: 1, usedWords: words }, seeded())

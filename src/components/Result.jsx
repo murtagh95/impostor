@@ -1,6 +1,9 @@
 import { getTheme } from '../data/themes.js'
 import Leaderboard from './Leaderboard.jsx'
 
+const listNames = (names) =>
+  names.length > 1 ? `${names.slice(0, -1).join(', ')} y ${names[names.length - 1]}` : names[0]
+
 export default function Result({ round, leaderboard, onPlayAgain, onSetup }) {
   const theme = getTheme(round.themeId)
   const impostors = round.roles.filter((r) => r.impostor).map((r) => r.name)
@@ -15,8 +18,12 @@ export default function Result({ round, leaderboard, onPlayAgain, onSetup }) {
         <span>{round.reason}</span>
       </div>
 
+      {round.inverted && (
+        <p className="inverted-notice">🔄 ¡Era una ronda invertida! Había más impostores que civiles.</p>
+      )}
+
       <p className="muted">{impostors.length > 1 ? 'Los impostores eran' : 'El impostor era'}</p>
-      <h2 className="player-name impostor-name">🕵️ {impostors.join(' y ')}</h2>
+      <h2 className="player-name impostor-name">🕵️ {listNames(impostors)}</h2>
 
       <p className="muted">La palabra secreta era</p>
       <div className="secret">
